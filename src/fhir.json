@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "title": "test plugin",
+  "title": "Sample Application",
   "version": "0.0.1",
-  "description": "just plugin template"
+  "description": "Show Alert Resources"
 }

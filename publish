@@ -1,7 +1,7 @@
 #!/bin/bash
 set +e # break script on first error
 
-APP='fhirplace-empty-plugin'
+APP='sample'
 npm run-script build
 tar cvzf app.tar.gz -C dist .
 curl -F "app=$APP" -F "file=@./app.tar.gz;filename=file" http://try-fhirplace.hospital-systems.com/api/app

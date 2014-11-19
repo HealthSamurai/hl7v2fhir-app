@@ -22,7 +22,7 @@
   },
   "scripts": {
     "install": "bower prune && bower install",
-    "start": "bower prune && bower install && webpack-dev-server --progress --colors",
+    "start": "bower prune && bower install && webpack-dev-server --port 11166 --progress --colors",
     "build": "npm install && rm -rf dist && webpack --progress --colors"
   }
 }

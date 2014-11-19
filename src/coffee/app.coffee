@@ -3,7 +3,7 @@ require('../../bower_components/angular-route/angular-route.js')
 require('../../bower_components/angular-sanitize/angular-sanitize.js')
 require('../../bower_components/angular-animate/angular-animate.js')
 require('../../bower_components/angular-cookies/angular-cookies.js')
-
+require('../../bower_components/fhir.js/dist/ngFhir.js')
 
 require('file?name=index.html!../index.html')
 require('file?name=fhir.json!../fhir.json')
@@ -39,13 +39,19 @@ activate = (name)->
     else
       delete x.active
 
+app.config ($fhirProvider)->
+  $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
+
 app.run ($rootScope)->
   $rootScope.sitemap = sitemap
   $rootScope.$on  "$routeChangeStart", (event, next, current)->
     activate(next.name)
 
-app.controller 'WelcomeCtrl', ($scope)->
+app.controller 'WelcomeCtrl', ($scope, $fhir)->
   $scope.header = "WelcomeCtrl"
+  $fhir.search(type: 'Alert', query: {})
+    .success (data)->
+      $scope.data = data
 
 app.controller 'Page1Ctrl', ($scope, $routeParams)->
   $scope.header = "Page1Ctrl"

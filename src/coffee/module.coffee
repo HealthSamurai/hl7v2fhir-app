@@ -3,4 +3,5 @@ module.exports = angular.module 'app', [
   'ngAnimate'
   'ngSanitize'
   'ngRoute'
+  'ng-fhir'
 ]

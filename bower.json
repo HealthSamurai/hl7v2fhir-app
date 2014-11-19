@@ -8,6 +8,7 @@
     "angular-sanitize": "latest",
     "angular-route": "latest",
     "angular-animate": "latest",
-    "fontawesome": "latest"
+    "fontawesome": "latest",
+    "fhir.js": "0.0.5"
   }
 }
