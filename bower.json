@@ -1,5 +1,5 @@
 {
-  "name": "fhirplace-spa-ui",
+  "name": "sample",
   "version": "0.0.0",
   "dependencies": {
     "bootstrap": "latest",
@@ -9,6 +9,6 @@
     "angular-route": "latest",
     "angular-animate": "latest",
     "fontawesome": "latest",
-    "fhir.js": "0.0.5"
+    "fhir-bower": "0.0.7"
   }
 }

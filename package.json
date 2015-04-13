@@ -1,9 +1,9 @@
 {
-  "name": "fhirbase-empty-plugin",
+  "name": "sample",
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
-    "fhirbase.js": "0.0.3",
+    "fhirbase.js": "latest",
     "bower": "latest",
     "coffee": "latest",
     "coffee-loader": "latest",
@@ -18,12 +18,12 @@
     "webpack-dev-server": "latest"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.12.0"
   },
   "scripts": {
     "install": "bower prune && bower install",
-    "start": "bower prune && bower install && webpack-dev-server --port 11166 --progress --colors",
+    "start": "bower prune && bower install && webpack-dev-server --port $PORT --progress --colors",
     "build": "npm install && rm -rf dist && webpack --progress --colors",
-    "fhir": "npm install && rm -rf dist && webpack --progress --colors && `npm bin`/fhirbase"
+    "fhir": "npm run-script build && `npm bin`/fhirbase"
   }
 }
