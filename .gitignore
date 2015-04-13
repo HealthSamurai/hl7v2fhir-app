@@ -1,7 +1,6 @@
 config.sh
-dist dist.tar.gz
+dist
+dist.tar.gz
 node_modules
 bower_components
-dist.tar.gz
-dist/
 *sw?
