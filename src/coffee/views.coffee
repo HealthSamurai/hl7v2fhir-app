@@ -1,3 +1,4 @@
+require('../views/redirect.html')
 require('../views/index.html')
 require('../views/404.html')
 require('../views/helo.html')

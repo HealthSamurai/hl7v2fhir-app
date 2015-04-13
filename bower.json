@@ -9,6 +9,7 @@
     "angular-route": "latest",
     "angular-animate": "latest",
     "fontawesome": "latest",
+    "uri.js": "latest",
     "fhir-bower": "0.0.7"
   }
 }
