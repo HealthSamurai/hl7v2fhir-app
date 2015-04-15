@@ -12,6 +12,7 @@
 </head>
 <body>
 <!-- Static navbar -->
+<pre> {{config|json}} </pre>
 <nav class="navbar navbar-default navbar-static-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -41,6 +42,14 @@
             <i ng-if="::item.icon" class="fa fa-{{::item.icon}}"></i>
             {{::item.label}}
           </a>
+        </li>
+        <li ng-if="user.login" class="login">
+          <strong>User: {{user.login}}</strong> | scope:
+          {{user.scope}}
+        </li>
+        <li ng-if="user.login">
+          <button ng-click="revoke()" class="btn btn-danger">Sign
+          out</button>
         </li>
       </ul>
     </div><!--/.nav-collapse -->

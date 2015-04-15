@@ -63,11 +63,9 @@ app.run ($rootScope)->
   $rootScope.sitemap = sitemap
   $rootScope.$on  "$routeChangeStart", (event, next, current)->
     activate(next.name)
+
 app.run ($rootScope, $window, $location, $http)->
   $rootScope.user = {}
-  $rootScope.user.isAuthorized = ->
-    self = $rootScope.user
-    self.scope == 'doctor' || self.scope == 'lab'
 
   if oauthConfig.response_type
     queryString = URI($window.location.search).query(true)
@@ -86,6 +84,12 @@ app.run ($rootScope, $window, $location, $http)->
             scope: oauthConfig.scope
           ).toString()
         $window.location.href = authorizeUri
+      else
+        $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.oauth.access_token)
+          .success (data) ->
+            $rootScope.user.login = data.login
+            $rootScope.user.scope = data.scope
+
 
   $rootScope.sitemap = sitemap
   $rootScope.$on  "$routeChangeStart", (event, next, current)->
@@ -101,12 +105,7 @@ app.run ($rootScope, $window, $location, $http)->
 app.controller 'RedirectCtrl',
   ($scope, $rootScope, $http, $location) ->
     if oauthConfig.response_type == 'token'
-      $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.oauth.access_token)
-        .success (data) ->
-          $rootScope.user.login = data.login
-          $rootScope.user.scope = data.scope
-
-          $location.path('/')
+      $location.path('/')
 
 app.controller 'WelcomeCtrl', ($scope, $fhir)->
   $scope.header = "WelcomeCtrl"
