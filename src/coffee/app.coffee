@@ -28,9 +28,6 @@ app.config ($routeProvider) ->
     .when '/',
       templateUrl: '/views/index.html'
       controller: 'WelcomeCtrl'
-    .when '/redirect',
-      templateUrl: '/views/redirect.html'
-      controller: 'RedirectCtrl'
 
   mkRoute = (acc, x)->
     acc.when("/#{x.name}", x)
@@ -53,7 +50,7 @@ app.config ($fhirProvider, $httpProvider) ->
     request: (config) ->
       uri = URI(config.url)
       unless uri.path().match(/^\/(views|oauth)/)
-        if oauthConfig.response_type && ($rootScope.oauth || {}).access_token
+        if ($rootScope.oauth || {}).access_token
           config.url = uri.addQuery(
             access_token: $rootScope.oauth.access_token
           ).toString()
@@ -65,35 +62,43 @@ app.run ($rootScope)->
     activate(next.name)
 
 app.run ($rootScope, $window, $location, $http)->
+  $rootScope.config = {
+        base: baseUrl()
+        client_id: oauthConfig.client_id
+        authorize_uri: oauthConfig.authorize_uri
+        redirect_uri: oauthConfig.redirect_uri
+        location: $location.path()
+        }
   $rootScope.user = {}
 
-  if oauthConfig.response_type
-    queryString = URI($window.location.search).query(true)
-    code = $location.search().code || queryString.code
-    accessToken = $location.search().access_token || queryString.access_token
-    $rootScope.oauth = {}
-    $rootScope.oauth.code = code if code
-    $rootScope.oauth.access_token = accessToken if accessToken
-    if oauthConfig.response_type == 'token'
-      if !$rootScope.oauth.access_token
-        authorizeUri = URI(oauthConfig.authorize_uri)
-          .setQuery(
-            client_id: oauthConfig.client_id
-            redirect_uri: oauthConfig.redirect_uri
-            response_type: oauthConfig.response_type
-            scope: oauthConfig.scope
-          ).toString()
-        $window.location.href = authorizeUri
-      else
-        $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.oauth.access_token)
-          .success (data) ->
-            $rootScope.user.login = data.login
-            $rootScope.user.scope = data.scope
-
+  queryString = URI($window.location.search).query(true)
+  accessToken = $location.search().access_token || queryString.access_token
+  state = $location.search().state || queryString.state
+  $rootScope.config.access_token = accessToken
+  $rootScope.config.state = state
+  $rootScope.oauth = {}
+  $rootScope.oauth.access_token = accessToken if accessToken
+  if !$rootScope.oauth.access_token
+    authorizeUri = URI(oauthConfig.authorize_uri)
+      .setQuery(
+        client_id: oauthConfig.client_id
+        redirect_uri: oauthConfig.redirect_uri
+        response_type: 'token'
+        scope: 'user'
+        state: $location.path()
+      ).toString()
+    $window.location.href = authorizeUri
+  else
+    $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.oauth.access_token)
+        .success (data) ->
+          $rootScope.user.login = data.login
+          $rootScope.user.scope = data.scope
 
   $rootScope.sitemap = sitemap
   $rootScope.$on  "$routeChangeStart", (event, next, current)->
     activate(next.name)
+
+  $location.path($rootScope.config.state)
 
   $rootScope.revoke = () ->
     $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/revoke?access_token=' + $rootScope.oauth.access_token)
@@ -101,11 +106,6 @@ app.run ($rootScope, $window, $location, $http)->
         $rootScope.oauth = {}
         $location.url($location.path())
         $window.location.reload();
-
-app.controller 'RedirectCtrl',
-  ($scope, $rootScope, $http, $location) ->
-    if oauthConfig.response_type == 'token'
-      $location.path('/')
 
 app.controller 'WelcomeCtrl', ($scope, $fhir)->
   $scope.header = "WelcomeCtrl"
@@ -120,6 +120,3 @@ app.controller 'Page1Ctrl', ($scope, $routeParams)->
 app.controller 'Page2Ctrl', ($scope, $routeParams)->
   $scope.header = "Page2Ctrl"
   $scope.params = $routeParams
-
-app.controller 'ProfileCtrl', ($scope, $routeParams)->
-  $scope.header = "ProfileCtrl"
