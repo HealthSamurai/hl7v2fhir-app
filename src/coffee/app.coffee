@@ -20,13 +20,12 @@ sitemap = require('./sitemap')
 
 log = require('./logger')
 
-baseUrl = require('./baseurl')
-
 mkRoute = (acc, x)->
   acc.when("/#{x.name}", x)
 
 app.config ($routeProvider) ->
   rp = $routeProvider.when '/',
+    name: 'home'
     templateUrl: '/views/home.html'
     controller: 'HomeCtrl'
 
@@ -42,7 +41,7 @@ activate = (name)->
       delete x.active
 
 app.config ($fhirProvider, $httpProvider) ->
-  $fhirProvider.baseUrl = baseUrl()
+  $fhirProvider.baseUrl = URI(window.location.search).query(true).base_uri
   $httpProvider.interceptors.push ($q, $timeout, $rootScope) ->
     request: (config) ->
       uri = URI(config.url)
@@ -77,7 +76,7 @@ app.run ($rootScope, $window, $location, $http)->
         scope: 'user'
         state: $location.path()
       ).toString()
-    #$window.location.href = authorizeUri
+    $window.location.href = authorizeUri
   else
     $http.get($rootScope.config.base_uri.replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.config.access_token)
         .success (data) ->
@@ -88,7 +87,8 @@ app.run ($rootScope, $window, $location, $http)->
   $rootScope.$on  "$routeChangeStart", (event, next, current)->
     activate(next.name)
 
-  #$location.path($rootScope.config.state)
+  if $rootScope.config.state
+    $location.path($rootScope.config.state)
 
   $rootScope.revoke = () ->
     $http.get($rootScope.config.base.replace(/fhir$/, '') + 'oauth/revoke?access_token=' + $rootScope.config.access_token)
