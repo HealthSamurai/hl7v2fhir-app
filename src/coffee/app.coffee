@@ -21,7 +21,6 @@ sitemap = require('./sitemap')
 log = require('./logger')
 
 baseUrl = require('./baseurl')
-oauthConfig = require('./oauth_config')()
 
 mkRoute = (acc, x)->
   acc.when("/#{x.name}", x)
@@ -48,46 +47,39 @@ app.config ($fhirProvider, $httpProvider) ->
     request: (config) ->
       uri = URI(config.url)
       unless uri.path().match(/^\/(views|oauth)/)
-        if ($rootScope.oauth || {}).access_token
+        if ($rootScope.config || {}).access_token
           config.url = uri.addQuery(
-            access_token: $rootScope.oauth.access_token
+            access_token: $rootScope.config.access_token
           ).toString()
       config
 
-app.run ($rootScope)->
-  $rootScope.sitemap = sitemap
-  $rootScope.$on  "$routeChangeStart", (event, next, current)->
-    activate(next.name)
-
 app.run ($rootScope, $window, $location, $http)->
+  query = URI($window.location.search).query(true)
+  search = $location.search()
   $rootScope.config = {
-        base: baseUrl()
-        client_id: oauthConfig.client_id
-        authorize_uri: oauthConfig.authorize_uri
-        redirect_uri: oauthConfig.redirect_uri
-        location: $location.path()
-        }
+        base_uri: search.base_uri || query.base_uri
+        client_id: search.client_id || query.client_id
+        authorize_uri: search.authorize_uri || query.authorize_uri
+        redirect_uri: $location.absUrl().replace($location.url(), '/')
+        location: $location.absUrl()
+        hash: $location.url()
+        access_token: search.access_token || query.access_token
+        state: search.state || query.state
+                }
   $rootScope.user = {}
 
-  queryString = URI($window.location.search).query(true)
-  accessToken = $location.search().access_token || queryString.access_token
-  state = $location.search().state || queryString.state
-  $rootScope.config.access_token = accessToken
-  $rootScope.config.state = state
-  $rootScope.oauth = {}
-  $rootScope.oauth.access_token = accessToken if accessToken
-  if !$rootScope.oauth.access_token
-    authorizeUri = URI(oauthConfig.authorize_uri)
+  unless $rootScope.config.access_token
+    authorizeUri = URI($rootScope.config.authorize_uri)
       .setQuery(
-        client_id: oauthConfig.client_id
-        redirect_uri: oauthConfig.redirect_uri
+        client_id: $rootScope.config.client_id
+        redirect_uri: $rootScope.config.redirect_uri
         response_type: 'token'
         scope: 'user'
         state: $location.path()
       ).toString()
-    $window.location.href = authorizeUri
+    #$window.location.href = authorizeUri
   else
-    $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.oauth.access_token)
+    $http.get($rootScope.config.base_uri.replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.config.access_token)
         .success (data) ->
           $rootScope.user.login = data.login
           $rootScope.user.scope = data.scope
@@ -96,12 +88,12 @@ app.run ($rootScope, $window, $location, $http)->
   $rootScope.$on  "$routeChangeStart", (event, next, current)->
     activate(next.name)
 
-  $location.path($rootScope.config.state)
+  #$location.path($rootScope.config.state)
 
   $rootScope.revoke = () ->
-    $http.get(baseUrl().replace(/fhir$/, '') + 'oauth/revoke?access_token=' + $rootScope.oauth.access_token)
+    $http.get($rootScope.config.base.replace(/fhir$/, '') + 'oauth/revoke?access_token=' + $rootScope.config.access_token)
       .success (data) ->
-        $rootScope.oauth = {}
+        $rootScope.config = {}
         $location.url($location.path())
         $window.location.reload();
 
