@@ -60,14 +60,12 @@ app.run ($rootScope, $window, $location, $http)->
         client_id: search.client_id || query.client_id
         authorize_uri: search.authorize_uri || query.authorize_uri
         redirect_uri: $location.absUrl().replace($location.url(), '/')
-        location: $location.absUrl()
-        hash: $location.url()
         access_token: search.access_token || query.access_token
         state: search.state || query.state
                 }
   $rootScope.user = {}
 
-  unless $rootScope.config.access_token
+  if $rootScope.config.authorize_uri && !$rootScope.config.access_token
     authorizeUri = URI($rootScope.config.authorize_uri)
       .setQuery(
         client_id: $rootScope.config.client_id
@@ -77,11 +75,11 @@ app.run ($rootScope, $window, $location, $http)->
         state: $location.path()
       ).toString()
     $window.location.href = authorizeUri
-  else
+  else if $rootScope.config.access_token && $rootScope.config.base_uri
     $http.get($rootScope.config.base_uri.replace(/fhir$/, '') + 'oauth/user?access_token=' + $rootScope.config.access_token)
-        .success (data) ->
-          $rootScope.user.login = data.login
-          $rootScope.user.scope = data.scope
+      .success (data) ->
+        $rootScope.user.login = data.login
+        $rootScope.user.scope = data.scope
 
   $rootScope.sitemap = sitemap
   $rootScope.$on  "$routeChangeStart", (event, next, current)->

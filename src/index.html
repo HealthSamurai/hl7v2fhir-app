@@ -12,7 +12,14 @@
 </head>
 <body>
 <!-- Static navbar -->
-<pre>{{config|json}}</pre>
+<div class="config" ng-hide="config.base_uri && config.authorize_uri && config.client_id">
+<span ng-hide="config.base_uri" class="alert alert-danger">Please specify <strong>base_uri</strong></span>
+<span ng-hide="config.authorize_uri" class="alert alert-danger">Please
+specify <strong>authorize_uri</strong></span>
+<span ng-hide="config.client_id" class="alert alert-danger">Please
+  specify <strong>client_id</strong></span>
+</div>
+
 <nav class="navbar navbar-default navbar-static-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
