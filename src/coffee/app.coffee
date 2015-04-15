@@ -23,17 +23,15 @@ log = require('./logger')
 baseUrl = require('./baseurl')
 oauthConfig = require('./oauth_config')()
 
-app.config ($routeProvider) ->
-  rp = $routeProvider
-    .when '/',
-      templateUrl: '/views/index.html'
-      controller: 'WelcomeCtrl'
+mkRoute = (acc, x)->
+  acc.when("/#{x.name}", x)
 
-  mkRoute = (acc, x)->
-    acc.when("/#{x.name}", x)
+app.config ($routeProvider) ->
+  rp = $routeProvider.when '/',
+    templateUrl: '/views/home.html'
+    controller: 'HomeCtrl'
 
   rp = sitemap.main.reduce mkRoute, rp
-
   rp.otherwise
     templateUrl: '/views/404.html'
 
@@ -107,16 +105,12 @@ app.run ($rootScope, $window, $location, $http)->
         $location.url($location.path())
         $window.location.reload();
 
-app.controller 'WelcomeCtrl', ($scope, $fhir)->
-  $scope.header = "WelcomeCtrl"
+app.controller 'HomeCtrl', ($scope, $fhir)->
+  $scope.header = "HomeCtrl"
   $fhir.search(type: 'Alert', query: {})
     .success (data)->
       $scope.data = data
 
-app.controller 'Page1Ctrl', ($scope, $routeParams)->
-  $scope.header = "Page1Ctrl"
-  $scope.params = $routeParams
-
-app.controller 'Page2Ctrl', ($scope, $routeParams)->
-  $scope.header = "Page2Ctrl"
+app.controller 'PageCtrl', ($scope, $routeParams)->
+  $scope.header = "PageCtrl"
   $scope.params = $routeParams

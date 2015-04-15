@@ -11,8 +11,7 @@ buildSiteMap = (x)->
 
 module.exports = {
   main: [
-    {label:"Home", href: "#/"}
-    {name: 'page1', label:"Page1"}
-    {name: 'page2', label:"Page2"}
+    {name: 'home', label: "Home", href: "#/"}
+    {name: 'page', label: "Page"}
   ].map(buildSiteMap)
 }
