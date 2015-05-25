@@ -1,13 +1,22 @@
 <h1> {{::header}} </h1>
 
+<h2> HL7 Raw Message </h2>
 <textarea class="message" id="message" required="true"
           placeholder="Place HL7 message here" ng-model="message">
 </textarea>
 <a class="btn btn-danger" ng-click="convert()"> Convert </a>
 
+<h2> HL7 Parsed Message </h2>
 <pre>
 {{ resource | json }}
 </pre>
+
+<h2> Result Patient </h2>
 <pre>
 {{ patient | json }}
+</pre>
+
+<h2> Result Encounter </h2>
+<pre>
+{{ encounter | json }}
 </pre>
