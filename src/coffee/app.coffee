@@ -45,7 +45,8 @@ activate = (name)->
       delete x.active
 
 app.config ($fhirProvider, $httpProvider) ->
-  $fhirProvider.baseUrl = URI(window.location.search).query(true).base_uri
+  $fhirProvider.baseUrl = window.location.origin + "/fhir/"
+
   $httpProvider.interceptors.push ($q, $timeout, $rootScope) ->
     request: (config) ->
       uri = URI(config.url)
@@ -59,11 +60,14 @@ app.config ($fhirProvider, $httpProvider) ->
 app.run ($rootScope, $window, $location, $http)->
   query = URI($window.location.search).query(true)
   search = $location.search()
+
+  base_uri = $window.location.origin
+
   $rootScope.config = {
-        base_uri: search.base_uri || query.base_uri
-        client_id: search.client_id || query.client_id
-        authorize_uri: search.authorize_uri || query.authorize_uri
-        redirect_uri: $location.absUrl().replace($location.url(), '/')
+        base_uri: base_uri + "/fhir/"
+        client_id: 'd4ead7fc-0577-4a7c-a224-f40084f30f6a'
+        authorize_uri: base_uri + "/oauth/authorize"
+        redirect_uri: base_uri + "/hl7v2fhir/"
         access_token: search.access_token || query.access_token
         state: search.state || query.state
                 }
@@ -105,7 +109,7 @@ app.controller 'HomeCtrl', ($scope, $fhir)->
     .success (data)->
       $scope.data = data
 
-app.controller 'PageCtrl', ($scope, $routeParams)->
+app.controller 'PageCtrl', ($scope, $routeParams, $fhir)->
   $scope.header = "PageCtrl"
   $scope.params = $routeParams
   $scope.message = "MSH|^~\\&|GHH LAB|ELAB-3|GHH OE|BLDG4|200202150930||ORU^R01|CNTRL-3456|P|2.4\nPID|||555-44-4444||EVERYWOMAN^EVE^E^S^P^^L|JONES|19620320|F|||153 FERNWOOD DR.^^STATESVILLE^OH^35292||(206)3345232|(206)752-121||maritalStatus||AC555444444||67-A4335^OH^20030520||||Y|2||||DateTime|Y|\nOBR|1|845439^GHH OE|1045813^GHH LAB|15545^GLUCOSE|||200202150730|||||||||"
@@ -117,3 +121,6 @@ app.controller 'PageCtrl', ($scope, $routeParams)->
     $scope.resource = res
     $scope.patient = patient
     $scope.encounter = encounter
+
+  $scope.savePatient = () ->
+    $fhir.create({resource: $scope.patient})

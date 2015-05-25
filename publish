@@ -1,8 +1,6 @@
 #!/bin/bash
-set +e # break script on first error
+set -e # break script on first error
 
-APP='sample'
+APP='hl7v2fhir'
 npm run-script build
-tar cvzf app.tar.gz -C dist .
-curl -F "app=$APP" -F "file=@./app.tar.gz;filename=file" http://try-fhirplace.hospital-systems.com/api/app
-rm -rf app.tar.gz
+scp -i ~/.ssh/medtronic-demo.pem -r dist/* ubuntu@52.8.110.237:~/apps/$APP
