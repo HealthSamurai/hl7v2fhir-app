@@ -1,8 +1,8 @@
 var etx = require("extract-text-webpack-plugin");
 
 module.exports = {
-  context: __dirname + "/src",
-  entry: "./coffee/app.coffee",
+  context: __dirname,
+    entry: ["./src/coffee/app.coffee", "./hl7v2fhir/src/adt/patient.coffee"],
   output: {
     path: __dirname + "/dist",
     filename: "app.js"

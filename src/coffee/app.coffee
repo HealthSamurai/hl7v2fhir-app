@@ -18,6 +18,9 @@ require('./data')
 
 sitemap = require('./sitemap')
 
+parser = require('../../hl7v2fhir/src/parser')
+adt2patient = require('../../hl7v2fhir/src/adt/patient')
+
 log = require('./logger')
 
 mkRoute = (acc, x)->
@@ -104,3 +107,12 @@ app.controller 'HomeCtrl', ($scope, $fhir)->
 app.controller 'PageCtrl', ($scope, $routeParams)->
   $scope.header = "PageCtrl"
   $scope.params = $routeParams
+  $scope.message = 'MSH|^~\&|GHH LAB|ELAB-3|GHH OE|BLDG4|200202150930||ORU^R01|CNTRL-3456|P|2.4
+PID|||555-44-4444||EVERYWOMAN^EVE^E^S^P^^L|JONES|19620320|F|||153 FERNWOOD DR.^^STATESVILLE^OH^35292||(206)3345232|(206)752-121||maritalStatus||AC555444444||67-A4335^OH^20030520||||Y|2||||DateTime|Y|
+OBR|1|845439^GHH OE|1045813^GHH LAB|15545^GLUCOSE|||200202150730|||||||||'
+
+  $scope.convert = ()->
+    res = parser.parse $scope.message
+    #patient = adt2patient.patient(res)
+    $scope.resource = res
+    #$scope.patient = patient

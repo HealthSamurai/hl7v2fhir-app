@@ -1,5 +1,13 @@
 <h1> {{::header}} </h1>
 
+<textarea class="message" id="message" required="true"
+          placeholder="Place HL7 message here" ng-model="message">
+</textarea>
+<a class="btn btn-danger" ng-click="convert()"> Convert </a>
+
 <pre>
-{{ params | json }}
+{{ resource | json }}
+</pre>
+<pre>
+{{ patient | json }}
 </pre>
