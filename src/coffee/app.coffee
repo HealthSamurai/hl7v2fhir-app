@@ -65,7 +65,7 @@ app.run ($rootScope, $window, $location, $http)->
 
   $rootScope.config = {
         base_uri: base_uri + "/fhir/"
-        client_id: 'd4ead7fc-0577-4a7c-a224-f40084f30f6a'
+        client_id: '12b09b1c-f82b-4adf-abce-79a296eaa376'
         authorize_uri: base_uri + "/oauth/authorize"
         redirect_uri: base_uri + "/hl7v2fhir/index.html"
         access_token: search.access_token || query.access_token
