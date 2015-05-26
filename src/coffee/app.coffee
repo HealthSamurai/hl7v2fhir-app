@@ -67,7 +67,7 @@ app.run ($rootScope, $window, $location, $http)->
         base_uri: base_uri + "/fhir/"
         client_id: 'd4ead7fc-0577-4a7c-a224-f40084f30f6a'
         authorize_uri: base_uri + "/oauth/authorize"
-        redirect_uri: base_uri + "/hl7v2fhir/"
+        redirect_uri: base_uri + "/hl7v2fhir/index.html"
         access_token: search.access_token || query.access_token
         state: search.state || query.state
                 }
@@ -105,7 +105,7 @@ app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'HomeCtrl', ($scope, $fhir)->
   $scope.header = "HomeCtrl"
-  $fhir.search(type: 'Alert', query: {})
+  $fhir.search(type: 'Flag', query: {})
     .success (data)->
       $scope.data = data
 
