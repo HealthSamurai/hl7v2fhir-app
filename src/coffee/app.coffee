@@ -105,9 +105,13 @@ app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'HomeCtrl', ($scope, $fhir)->
   $scope.header = "HomeCtrl"
-  $fhir.search(type: 'Alert', query: {})
+  $fhir.search(type: 'Patient', query: {})
     .success (data)->
-      $scope.data = data
+      $scope.patients = data
+
+  $fhir.search(type: 'Encounter', query: {})
+    .success (data)->
+      $scope.encounters = data
 
 app.controller 'PageCtrl', ($scope, $routeParams, $fhir)->
   $scope.header = "PageCtrl"

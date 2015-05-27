@@ -1,6 +1,13 @@
 <h1> {{::header}} </h1>
 
-<div class="alert alert-success" ng-repeat="entry in data.entry">
-  {{entry.content.note}}
+<h2>Patients</h2>
+
+<div class="alert alert-success" ng-repeat="entry in patients.entry">
+  <pre>{{ entry.resource | json }}</pre>
 </div>
 
+<h2>Encounters</h2>
+
+<div class="alert alert-success" ng-repeat="entry in encounters.entry">
+  <pre>{{ entry.resource | json }}</pre>
+</div>
